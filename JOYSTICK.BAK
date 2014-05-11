@@ -1,0 +1,34 @@
+#include "JOYSTICK.H"
+
+unsigned int getJoystickPosition(unsigned char mode)
+{
+	unsigned char m = mode;
+	asm{
+		pushf
+		cli
+		xor al, al
+		xor cx, cx
+		mov dx, JOYSTICK_PORT
+		out dx , al
+	}
+	counter:
+	asm{
+		in al, dx;
+		test al, [m]
+		loopne counter
+		sti
+		xor ax, ax
+		sub ax, cx
+		popf
+	}
+}
+
+unsigned char getJoystickButtons()
+{
+	asm{
+		mov dx, JOYSTICK_PORT
+		out dx , al
+		in al, dx;
+		neg al
+	}
+}
